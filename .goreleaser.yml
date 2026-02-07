@@ -1,0 +1,38 @@
+project_name: terraform-provider-vtex
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: provider
+    main: .
+    binary: terraform-provider-vtex
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - format: zip
+    name_template: "terraform-provider-vtex_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - LICENSE*
+      - README*
+
+checksum:
+  name_template: "terraform-provider-vtex_{{ .Version }}_SHA256SUMS"
+
+signs:
+  - artifacts: checksum
+    args:
+      - "--batch"
+      - "--yes"
+      - "--detach-sign"
+      - "{{ .ArtifactPath }}"
